@@ -6258,8 +6258,8 @@ enum hostfield_e
 };
 
 #include "arch_def.h"
-#include "net_sys.h"
-#include "net_defs.h"
+#include "net/net_sys.h"
+#include "net/net_defs.h"
 static size_t hostCacheSortCount;
 static size_t hostCacheSort[HOSTCACHESIZE];
 static enum hostfield_e serversort_field;

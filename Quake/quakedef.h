@@ -281,12 +281,12 @@ typedef struct
 #include "cvar.h"
 
 #include "protocol.h"
-#include "net.h"
+#include "net/net.h"
 
 #include "cmd.h"
 #include "crc.h"
 
-#include "snd_voip.h"
+#include "snd/snd_voip.h"
 #include "progs.h"
 #include "server.h"
 
@@ -312,22 +312,22 @@ typedef struct
 #include "vid.h"
 #include "screen.h"
 #include "draw.h"
-#include "render.h"
+#include "render/render.h"
 #include "view.h"
 #include "sbar.h"
 #include "q_sound.h"
-#include "client.h"
+#include "client/client.h"
 
-#include "gl_model.h"
+#include "gl/gl_model.h"
 #include "world.h"
 
 #include "image.h"	//johnfitz
-#include "gl_texmgr.h"	//johnfitz
+#include "gl/gl_texmgr.h"  //johnfitz
 #include "input.h"
 #include "keys.h"
 #include "menu.h"
 #include "cdaudio.h"
-#include "glquake.h"
+#include "gl/glquake.h"
 
 
 //=============================================================================

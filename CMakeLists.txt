@@ -2,6 +2,8 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.0)
 
 PROJECT(QSS)
 
+set(CMAKE_CXX_STANDARD 20)
+
 SET(QS_LIBS ${QS_LIBS} m ${CMAKE_DL_LIBS})
 
 #other people seem to still care about msvc.
@@ -38,7 +40,7 @@ ENDIF ()
 
 ### audio drivers
 IF (1)
-    SET(QS_FILES ${QS_FILES} Quake/snd_wave.c)
+    SET(QS_FILES ${QS_FILES} Quake/snd/snd_wave.c)
     SET(QS_DEFS ${QS_DEFS};USE_CODEC_WAVE)
 ELSE ()
     MESSAGE(WARNING "AudioCodec wave: missing, somehow...")
@@ -47,7 +49,7 @@ ENDIF ()
 PKG_SEARCH_MODULE(FLAC flac)
 IF (FLAC_FOUND)
     SET(QS_LIBS ${QS_LIBS} ${FLAC_LIBRARIES})
-    SET(QS_FILES ${QS_FILES} Quake/snd_flac.c)
+    SET(QS_FILES ${QS_FILES} Quake/snd/snd_flac.c)
     SET(QS_DEFS ${QS_DEFS};USE_CODEC_FLAC)
     MESSAGE("Found libFLAC support.")
 ELSE ()
@@ -61,7 +63,7 @@ IF (OPUS_FOUND AND OPUSFILE_FOUND)
     SET(QS_DIRS ${QS_DIRS} ${OPUSFILE_INCLUDE_DIRS})
     SET(QS_LIBS ${QS_LIBS} ${OPUS_LIBRARIES})
     SET(QS_LIBS ${QS_LIBS} ${OPUSFILE_LIBRARIES})
-    SET(QS_FILES ${QS_FILES} Quake/snd_opus.c)
+    SET(QS_FILES ${QS_FILES} Quake/snd/snd_opus.c)
     SET(QS_DEFS ${QS_DEFS};USE_CODEC_OPUS)
     MESSAGE("Found libopusfile support.")
 ELSE ()
@@ -71,7 +73,7 @@ ENDIF ()
 PKG_SEARCH_MODULE(VORBISFILE vorbisfile)
 IF (VORBISFILE_FOUND)
     SET(QS_LIBS ${QS_LIBS} ${VORBISFILE_LIBRARIES})
-    SET(QS_FILES ${QS_FILES} Quake/snd_vorbis.c)
+    SET(QS_FILES ${QS_FILES} Quake/snd/snd_vorbis.c)
     SET(QS_DEFS ${QS_DEFS};USE_CODEC_VORBIS)
     MESSAGE("Found libvorbisfile support.")
 ELSE ()
@@ -82,7 +84,7 @@ ENDIF ()
 PKG_SEARCH_MODULE(MIKMOD libmikmod)
 IF (MIKMOD_FOUND)
     SET(QS_LIBS ${QS_LIBS} ${MIKMOD_LIBRARIES})
-    SET(QS_FILES ${QS_FILES} Quake/snd_mikmod.c)
+    SET(QS_FILES ${QS_FILES} Quake/snd/snd_mikmod.c)
     SET(QS_DEFS ${QS_DEFS};USE_CODEC_MIKMOD)
     MESSAGE("Found libmikmod support.")
 ELSE ()
@@ -92,14 +94,14 @@ ENDIF ()
 PKG_SEARCH_MODULE(MAD mad)
 IF (MAD_FOUND)
     SET(QS_LIBS ${QS_LIBS} ${MAD_LIBRARIES})
-    SET(QS_FILES ${QS_FILES} Quake/snd_mp3.c)
+    SET(QS_FILES ${QS_FILES} Quake/snd/snd_mp3.c)
     SET(QS_DEFS ${QS_DEFS};USE_CODEC_MP3)
     MESSAGE("Found libmad support.")
 ELSE ()
     #	MESSAGE(WARNING "no libmad support.")
     PKG_SEARCH_MODULE(MPG123 libmpg123)
     IF (MPG123_FOUND)
-        SET(QS_FILES ${QS_FILES} Quake/snd_mpg123.c)
+        SET(QS_FILES ${QS_FILES} Quake/snd/snd_mpg123.c)
         SET(QS_DEFS ${QS_DEFS};USE_CODEC_MP3)
         MESSAGE("Found libmpg123 support.")
     ELSE ()
@@ -110,7 +112,7 @@ ENDIF ()
 PKG_SEARCH_MODULE(XMP libxmp)
 IF (XMP_FOUND)
     SET(QS_LIBS ${QS_LIBS} ${XMP_LIBRARIES})
-    SET(QS_FILES ${QS_FILES} Quake/snd_xmp.c)
+    SET(QS_FILES ${QS_FILES} Quake/snd/snd_xmp.c)
     SET(QS_DEFS ${QS_DEFS};USE_CODEC_XMP)
     MESSAGE("Found libxmp support.")
 ELSE ()
@@ -135,30 +137,30 @@ ADD_EXECUTABLE(quakespasm
         Quake/cd_sdl.c
         Quake/cfgfile.c
         Quake/chase.c
-        Quake/cl_demo.c
-        Quake/cl_input.c
-        Quake/cl_main.c
-        Quake/cl_parse.c
-        Quake/cl_tent.c
+        Quake/client/cl_demo.c
+        Quake/client/cl_input.c
+        Quake/client/cl_main.c
+        Quake/client/cl_parse.c
+        Quake/client/cl_tent.c
         Quake/cmd.c
         Quake/common.c
         Quake/console.c
         Quake/crc.c
         Quake/cvar.c
         Quake/fs_zip.c
-        Quake/gl_draw.c
-        Quake/gl_fog.c
-        Quake/gl_mesh.c
-        Quake/gl_model.c
-        Quake/gl_refrag.c
-        Quake/gl_rlight.c
-        Quake/gl_rmain.c
-        Quake/gl_rmisc.c
-        Quake/gl_screen.c
-        Quake/gl_sky.c
-        Quake/gl_texmgr.c
-        Quake/gl_vidsdl.c
-        Quake/gl_warp.c
+        Quake/gl/gl_draw.c
+        Quake/gl/gl_fog.c
+        Quake/gl/gl_mesh.c
+        Quake/gl/gl_model.c
+        Quake/gl/gl_refrag.c
+        Quake/gl/gl_rlight.c
+        Quake/gl/gl_rmain.c
+        Quake/gl/gl_rmisc.c
+        Quake/gl/gl_screen.c
+        Quake/gl/gl_sky.c
+        Quake/gl/gl_texmgr.c
+        Quake/gl/gl_vidsdl.c
+        Quake/gl/gl_warp.c
         Quake/host.c
         Quake/host_cmd.c
         Quake/image.c
@@ -169,13 +171,13 @@ ADD_EXECUTABLE(quakespasm
         Quake/mathlib.c
         Quake/mdfour.c
         Quake/menu.c
-        Quake/net_dgrm.c
-        Quake/net_loop.c
-        Quake/net_main.c
-        Quake/net_udp.c
-        Quake/net_win.c
-        Quake/net_wins.c
-        Quake/net_wipx.c
+        Quake/net/net_dgrm.c
+        Quake/net/net_loop.c
+        Quake/net/net_main.c
+        Quake/net/net_udp.c
+        Quake/net/net_win.c
+        Quake/net/net_wins.c
+        Quake/net/net_wipx.c
         #Quake/pl_linux.c
         Quake/pl_win.c
         Quake/pmove.c
@@ -184,26 +186,26 @@ ADD_EXECUTABLE(quakespasm
         Quake/pr_edict.c
         Quake/pr_exec.c
         Quake/pr_ext.c
-        Quake/r_alias.c
-        Quake/r_brush.c
-        Quake/r_part.c
-        Quake/r_part_fte.c
-        Quake/r_sprite.c
-        Quake/r_world.c
+        Quake/render/r_alias.c
+        Quake/render/r_brush.c
+        Quake/render/r_part.c
+        Quake/render/r_part_fte.c
+        Quake/render/r_sprite.c
+        Quake/render/r_world.c
         Quake/sbar.c
-        Quake/snd_codec.c
-        Quake/snd_dma.c
-        Quake/snd_mem.c
-        Quake/snd_mix.c
-        Quake/snd_mp3tag.c
-        Quake/snd_sdl.c
-        Quake/snd_voip.c
+        Quake/snd/snd_codec.c
+        Quake/snd/snd_dma.c
+        Quake/snd/snd_mem.c
+        Quake/snd/snd_mix.c
+        Quake/snd/snd_mp3tag.c
+        Quake/snd/snd_sdl.c
+        Quake/snd/snd_voip.c
         Quake/strlcat.c
         Quake/strlcpy.c
-        Quake/sv_main.c
-        Quake/sv_move.c
-        Quake/sv_phys.c
-        Quake/sv_user.c
+        Quake/server/sv_main.c
+        Quake/server/sv_move.c
+        Quake/server/sv_phys.c
+        Quake/server/sv_user.c
         #Quake/sys_sdl_unix.c
         Quake/sys_sdl_win.c
         Quake/view.c
