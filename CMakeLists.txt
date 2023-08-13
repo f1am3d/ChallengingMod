@@ -216,6 +216,25 @@ ADD_EXECUTABLE(quakespasm
 SET_TARGET_PROPERTIES(quakespasm PROPERTIES COMPILE_DEFINITIONS "${QS_DEFS}")
 TARGET_LINK_LIBRARIES(quakespasm ${QS_LIBS} ws2_32 winmm)
 
+
+# Copy mod bat
+add_custom_command(
+        TARGET quakespasm POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_SOURCE_DIR}/Quake/mod.bat
+        $<TARGET_FILE_DIR:quakespasm>
+)
+
+# Copy progs
+add_custom_command(
+        TARGET quakespasm POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_SOURCE_DIR}/Quake/progs/progs.dat
+        $<TARGET_FILE_DIR:quakespasm>/mod
+)
+
+
+#Copy dependencies
 add_custom_command(
         TARGET quakespasm POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different

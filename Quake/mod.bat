@@ -1,0 +1,1 @@
+quakespasm.exe -game mod
