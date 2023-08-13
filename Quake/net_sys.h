@@ -20,6 +20,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+#pragma once
 
 #ifndef __NET_SYS_H__
 #define __NET_SYS_H__
@@ -161,7 +162,7 @@ typedef u_long	in_addr_t;	/* uint32_t */
 typedef int	socklen_t;
 #endif	/* socklen_t type */
 
-typedef SOCKET	sys_socket_t;
+typedef SOCKET sys_socket_t;
 
 #define	selectsocket	select
 #define	IOCTLARG_P(x)	/* (u_long *) */ x

@@ -38,6 +38,10 @@ static sys_socket_t net_controlsocket6;
 
 static struct in6_addr	myAddrv6;
 
+int ioctl(sys_socket_t acceptsocket4, int i, int * pInt);
+
+char * hstrerror(int (* _errno)());
+
 #include "net_udp.h"
 
 //=============================================================================
@@ -132,6 +136,10 @@ sys_socket_t UDP4_Init (void)
 	ipv4Available = true;
 
 	return net_controlsocket4;
+}
+
+char * hstrerror(int (* _errno)()) {
+  return NULL;
 }
 
 //=============================================================================
@@ -294,6 +302,10 @@ sys_socket_t UDP4_CheckNewConnections (void)
 	// quietly absorb empty packets
 	recvfrom (net_acceptsocket4, buff, 0, 0, (struct sockaddr *) &from, &fromlen);
 	return INVALID_SOCKET;
+}
+
+int ioctl(sys_socket_t acceptsocket4, int i, int * pInt) {
+  return 0;
 }
 
 //=============================================================================

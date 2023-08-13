@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "q_stdinc.h"
-#include "arch_def.h"
 #include "net_sys.h"
 #include "quakedef.h"
 #include "net_defs.h"
@@ -67,7 +66,7 @@ net_driver_t net_drivers[] =
 	}
 };
 
-const int net_numdrivers = (sizeof(net_drivers) / sizeof(net_drivers[0]));
+int net_numdrivers = (sizeof(net_drivers) / sizeof(net_drivers[0]));
 
 
 #include "net_wins.h"
@@ -148,5 +147,5 @@ net_landriver_t	net_landrivers[] =
 	}
 };
 
-const int net_numlandrivers = (sizeof(net_landrivers) / sizeof(net_landrivers[0]));
+int net_numlandrivers = (sizeof(net_landrivers) / sizeof(net_landrivers[0]));
 

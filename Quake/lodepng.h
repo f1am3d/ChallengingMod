@@ -1,3 +1,4 @@
+#pragma once
 /*
 LodePNG version 20220717
 
@@ -206,40 +207,8 @@ unsigned lodepng_encode_memory(unsigned char** out, size_t* outsize,
                                const unsigned char* image, unsigned w, unsigned h,
                                LodePNGColorType colortype, unsigned bitdepth);
 
-/*Same as lodepng_encode_memory, but always encodes from 32-bit RGBA raw image.*/
-unsigned lodepng_encode32(unsigned char** out, size_t* outsize,
-                          const unsigned char* image, unsigned w, unsigned h);
-
-/*Same as lodepng_encode_memory, but always encodes from 24-bit RGB raw image.*/
-unsigned lodepng_encode24(unsigned char** out, size_t* outsize,
-                          const unsigned char* image, unsigned w, unsigned h);
-
 #ifdef LODEPNG_COMPILE_DISK
-/*
-Converts raw pixel data into a PNG file on disk.
-Same as the other encode functions, but instead takes a filename as output.
 
-NOTE: This overwrites existing files without warning!
-
-NOTE: Wide-character filenames are not supported, you can use an external method
-to handle such files and encode in-memory.*/
-unsigned lodepng_encode_file(const char* filename,
-                             const unsigned char* image, unsigned w, unsigned h,
-                             LodePNGColorType colortype, unsigned bitdepth);
-
-/*Same as lodepng_encode_file, but always encodes from 32-bit RGBA raw image.
-
-NOTE: Wide-character filenames are not supported, you can use an external method
-to handle such files and encode in-memory.*/
-unsigned lodepng_encode32_file(const char* filename,
-                               const unsigned char* image, unsigned w, unsigned h);
-
-/*Same as lodepng_encode_file, but always encodes from 24-bit RGB raw image.
-
-NOTE: Wide-character filenames are not supported, you can use an external method
-to handle such files and encode in-memory.*/
-unsigned lodepng_encode24_file(const char* filename,
-                               const unsigned char* image, unsigned w, unsigned h);
 #endif /*LODEPNG_COMPILE_DISK*/
 #endif /*LODEPNG_COMPILE_ENCODER*/
 
@@ -846,7 +815,6 @@ typedef struct LodePNGEncoderSettings {
 #endif /*LODEPNG_COMPILE_ANCILLARY_CHUNKS*/
 } LodePNGEncoderSettings;
 
-void lodepng_encoder_settings_init(LodePNGEncoderSettings* settings);
 #endif /*LODEPNG_COMPILE_ENCODER*/
 
 
@@ -942,23 +910,12 @@ it may be corrupt data.
 */
 unsigned lodepng_chunk_length(const unsigned char* chunk);
 
-/*puts the 4-byte type in null terminated string*/
-void lodepng_chunk_type(char type[5], const unsigned char* chunk);
-
 /*check if the type is the given type*/
 unsigned char lodepng_chunk_type_equals(const unsigned char* chunk, const char* type);
 
 /*0: it's one of the critical chunk types, 1: it's an ancillary chunk (see PNG standard)*/
 unsigned char lodepng_chunk_ancillary(const unsigned char* chunk);
 
-/*0: public, 1: private (see PNG standard)*/
-unsigned char lodepng_chunk_private(const unsigned char* chunk);
-
-/*0: the chunk is unsafe to copy, 1: the chunk is safe to copy (see PNG standard)*/
-unsigned char lodepng_chunk_safetocopy(const unsigned char* chunk);
-
-/*get pointer to the data of the chunk, where the input points to the header of the chunk*/
-unsigned char* lodepng_chunk_data(unsigned char* chunk);
 const unsigned char* lodepng_chunk_data_const(const unsigned char* chunk);
 
 /*returns 0 if the crc is correct, 1 if it's incorrect (0 for OK as usual!)*/
@@ -1083,7 +1040,6 @@ return value: error code (0 means ok)
 NOTE: Wide-character filenames are not supported, you can use an external method
 to handle such files and encode in-memory
 */
-unsigned lodepng_save_file(const unsigned char* buffer, size_t buffersize, const char* filename);
 #endif /*LODEPNG_COMPILE_DISK*/
 
 #ifdef LODEPNG_COMPILE_CPP
@@ -2083,3 +2039,6 @@ Account: lode dot vandevenne.
 
 Copyright (c) 2005-2022 Lode Vandevenne
 */
+
+
+extern void lodepng_free(void* ptr);

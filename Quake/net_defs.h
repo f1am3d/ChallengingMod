@@ -20,6 +20,9 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  */
+#pragma once
+
+#include "net_sys.h"
 
 #ifndef __NET_DEFS_H
 #define __NET_DEFS_H
@@ -129,6 +132,8 @@ CCREP_RULE_INFO
 #define CCREP_RULE_INFO		0x85
 #define CCREP_RCON			0x86
 
+typedef UINT_PTR	SOCKET;
+typedef SOCKET sys_socket_t;
 typedef struct qsocket_s
 {
 	struct qsocket_s	*next;
@@ -200,7 +205,6 @@ typedef struct
 
 #define	MAX_NET_DRIVERS		8
 extern net_landriver_t	net_landrivers[];
-extern const int	net_numlandrivers;
 
 typedef struct
 {
@@ -223,7 +227,6 @@ typedef struct
 } net_driver_t;
 
 extern net_driver_t	net_drivers[];
-extern const int	net_numdrivers;
 
 /* Loop driver must always be registered the first */
 #define IS_LOOP_DRIVER(p)	((p) == 0)
@@ -271,3 +274,5 @@ void SchedulePollProcedure(PollProcedure *pp, double timeOffset);
 
 #endif	/* __NET_DEFS_H */
 
+extern int net_numdrivers;
+extern int net_numlandrivers;

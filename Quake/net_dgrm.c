@@ -1693,6 +1693,7 @@ static struct
 } *hostlist;
 size_t hostlist_count;
 size_t hostlist_max;
+
 static void _Datagram_AddPossibleHost(struct qsockaddr *addr, qboolean master)
 {
 	size_t u;
