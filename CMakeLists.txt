@@ -221,16 +221,25 @@ TARGET_LINK_LIBRARIES(quakespasm ${QS_LIBS} ws2_32 winmm)
 add_custom_command(
         TARGET quakespasm POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-        ${CMAKE_SOURCE_DIR}/Quake/mod.bat
+        ${CMAKE_SOURCE_DIR}/ChallengingMod/mod.bat
         $<TARGET_FILE_DIR:quakespasm>
 )
 
-# Copy progs
+# Build and copy progs
 add_custom_command(
         TARGET quakespasm POST_BUILD
+        COMMAND ${CMAKE_SOURCE_DIR}/fteqcc64.exe -src ./src -srcfile progs.src
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/ChallengingMod
+)
+set(DEST_DIR "$<TARGET_FILE_DIR:quakespasm>/mod")
+add_custom_command(
+        TARGET quakespasm POST_BUILD
+
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${DEST_DIR}
+
         COMMAND ${CMAKE_COMMAND} -E copy
-        ${CMAKE_SOURCE_DIR}/Quake/progs/progs.dat
-        $<TARGET_FILE_DIR:quakespasm>/mod
+        ${CMAKE_SOURCE_DIR}/ChallengingMod/progs.dat
+        $<TARGET_FILE_DIR:quakespasm>/mod/
 )
 
 
