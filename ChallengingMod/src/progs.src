@@ -17,11 +17,15 @@ triggers.qc
 plats.qc
 misc.qc
 
-ogre.qc
+ogre/ogre_init.qc
+ogre/ogre_fight.qc
+ogre/ogre.qc
 demon.qc
 shambler.qc
 knight.qc
-soldier.qc
+soldier/soldier_init.qc
+soldier/soldier_fight.qc
+soldier/soldier.qc
 wizard.qc
 dog.qc
 zombie.qc

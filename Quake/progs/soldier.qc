@@ -298,7 +298,6 @@ void() monster_army =
 	precache_sound ("soldier/pain2.wav");
 	precache_sound ("soldier/sattck1.wav");
 	precache_sound ("soldier/sight1.wav");
-	precache_sound ("player/axhit2.wav");
 
 	// gib death
 	precache_sound ("player/udeath.wav");
@@ -307,17 +306,28 @@ void() monster_army =
 	self.solid = SOLID_SLIDEBOX;
 	self.movetype = MOVETYPE_STEP;
 
-	setmodel (self, "progs/soldier.mdl");
+	// setmodel (self, "progs/soldier.mdl");
+	setmodel (self, "progs/player.mdl");
 
 	setsize (self, '-16 -16 -24', '16 16 40');
 	self.health = 80;
 
-	self.th_stand = army_stand1;
-	self.th_walk = army_walk1;
-	self.th_run = army_run1;
-	self.th_missile = army_atk1;
-	self.th_pain = army_pain;
-	self.th_die = army_die;
+	if(random() > 0.9) {
+		self.th_stand = army_stand1;
+		self.th_walk = army_walk1;
+		self.th_run = army_run1;
+		self.th_missile = army_atk1;
+		self.th_pain = army_pain;
+		self.th_die = army_die;
+	}
+	else {
+		self.th_stand = stand1;
+		self.th_walk = rockrun1;
+		self.th_run = rockrun1;
+		self.th_missile = shotatt1;
+		self.th_pain = pain1;
+		self.th_die = deatha1;
+	}
 
 	walkmonster_start ();
 };

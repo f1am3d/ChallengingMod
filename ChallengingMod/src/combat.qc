@@ -118,8 +118,7 @@ The damage is coming from inflictor, but get mad at attacker
 This should be the only function that ever reduces health.
 ============
 */
-void(entity targ, entity inflictor, entity attacker, float damage) T_Damage=
-{
+void(entity targ, entity inflictor, entity attacker, float damage) T_Damage = {
 	local	vector	dir;
 	local	entity	oldself;
 	local	float	save;
@@ -213,12 +212,24 @@ void(entity targ, entity inflictor, entity attacker, float damage) T_Damage=
 		}
 	}
 
-	if (self.th_pain)
-	{
+	if (self.th_pain) {
 		self.th_pain(attacker, take);
-		// nightmare mode monsters don't go into pain frames often
-		if (skill == 3)
-			self.pain_finished = time + 5;
+
+		switch (skill) {
+			case 0:
+				self.pain_finished = time + 5;
+				break;
+			case 1:
+				self.pain_finished = time + 10;
+				break;
+			case 2:
+				self.pain_finished = time + 15;
+				break;
+			case 3:
+				// nightmare mode monsters don't go into pain frames often
+				self.pain_finished = time + 25;
+				break;
+		}
 	}
 
 	self = oldself;

@@ -71,6 +71,8 @@ float(float v) anglemod =
 	return v;
 };
 
+.float retreat_steps;
+
 /*
 ==============================================================================
 
@@ -229,21 +231,21 @@ float(entity targ) infront =
 
 //============================================================================
 
-void(vector enemy_origin) HuntTarget =
-{
+void(vector enemy_origin) HuntTarget = {
 	self.goalentity = self.enemy;
 	self.think = self.th_run;
+	self.ideal_yaw = vectoyaw(enemy_origin - self.origin);
 
 	switch(self.classname) {
-		case "monster_army":
-			self.ideal_yaw = vectoyaw(self.origin - enemy_origin);
+		case "monster_ogre":
+			self.nextthink = 0.1;
 			break;
+
 		default:
-			self.ideal_yaw = vectoyaw(enemy_origin - self.origin);
+			self.nextthink = time + 0.1;
 			break;
 	}
 
-	self.nextthink = time + 0.1;
 	SUB_AttackFinished (1);	// wait a while before first attack
 };
 
@@ -372,9 +374,11 @@ float() FindTarget =
 	// got one
 	//
 	self.enemy = client;
+
 	if (self.enemy.classname != "player")
 	{
 		self.enemy = self.enemy.enemy;
+
 		if (self.enemy.classname != "player")
 		{
 			self.enemy = world;
@@ -408,8 +412,7 @@ ai_pain
 stagger back a bit
 =============
 */
-void(float dist) ai_pain =
-{
+void(float dist) ai_pain = {
 	ai_back (dist);
 };
 
@@ -420,7 +423,7 @@ ai_painforward
 stagger back a bit
 =============
 */
-void(float dist) ai_painforward =
+void(float dist) ai_painforward = 
 {
 	walkmove (self.ideal_yaw, dist);
 };
@@ -453,11 +456,9 @@ The monster is staying in one place for a while, with slight angle turns
 */
 void() ai_stand =
 {
-	if (FindTarget ())
-		return;
+	if (FindTarget ()) return;
 
-	if (time > self.pausetime)
-	{
+	if (time > self.pausetime) {
 		self.th_walk ();
 		return;
 	}
@@ -472,8 +473,7 @@ don't move, but turn towards ideal_yaw
 */
 void() ai_turn =
 {
-	if (FindTarget ())
-		return;
+	if (FindTarget ()) return;
 
 	ChangeYaw ();
 };
@@ -532,23 +532,30 @@ float() FacingIdeal =
 float()	WizardCheckAttack;
 float()	DogCheckAttack;
 
-float() CheckAnyAttack =
-{
-	if (!enemy_vis)
-		return FALSE;
-	if (self.classname == "monster_army")
-		return SoldierCheckAttack ();
-	if (self.classname == "monster_ogre")
-		return OgreCheckAttack ();
-	if (self.classname == "monster_shambler")
-		return ShamCheckAttack ();
-	if (self.classname == "monster_demon1")
-		return DemonCheckAttack ();
-	if (self.classname == "monster_dog")
-		return DogCheckAttack ();
-	if (self.classname == "monster_wizard")
-		return WizardCheckAttack ();
-	return CheckAttack ();
+float() CheckAnyAttack = {
+	if (!enemy_vis) return FALSE;
+
+	switch (self.classname) {
+		case "monster_shambler":
+			return ShamCheckAttack ();
+		
+		case "monster_demon1":
+			return DemonCheckAttack ();
+		
+		case "monster_dog":
+			return DogCheckAttack ();
+		
+		case "monster_wizard":
+			return WizardCheckAttack ();
+
+		case "monster_army":
+		case "monster_ogre":
+			return 0;
+
+		default: 
+			return CheckAttack ();
+		
+	}
 };
 
 
@@ -583,8 +590,8 @@ void() ai_run_missile =
 {
 	self.ideal_yaw = enemy_yaw;
 	ChangeYaw ();
-	if (FacingIdeal())
-	{
+
+	if (FacingIdeal()) {
 		self.th_missile ();
 		self.attack_state = AS_STRAIGHT;
 	}
@@ -620,35 +627,78 @@ void() ai_run_slide =
 
 /*
 =============
+ai_retreat
+
+Stay away from the enemy
+=============
+*/
+void() ai_retreat = {
+	self.retreat_steps = 5;
+	self.ideal_yaw = -self.ideal_yaw;
+
+	ChangeYaw ();
+};
+
+
+/*
+=============
+ai_check_retreat
+
+Check if need to face to enemy or run away
+=============
+*/
+float() ai_check_retreat = {
+	local float distance = vlen(self.enemy.origin - self.origin);
+
+	switch(self.classname){
+		case "monster_army": 
+			if (distance <= 200) {
+				return TRUE;
+			}
+		break;
+	}
+
+	return FALSE;
+};
+
+
+void() ai_enemy_dead = {
+	self.enemy = world;
+	
+	// FIXME: look all around for other targets
+	if (self.oldenemy.health > 0) {
+		self.enemy = self.oldenemy;
+		HuntTarget (self.enemy.origin);
+	}
+	else {
+		if (self.movetarget)
+			self.th_walk ();
+		else
+			self.th_stand ();
+		return;
+	}
+};
+
+
+/*
+=============
 ai_run
 
 The monster has an enemy it is trying to kill
 =============
 */
-void(float dist) ai_run =
-{
-	movedist = dist;
-
+void(float dist) ai_run = {
 	// see if the enemy is dead
-	if (self.enemy.health <= 0)
-	{
-		self.enemy = world;
-		
-		// FIXME: look all around for other targets
-		if (self.oldenemy.health > 0)
-		{
-			self.enemy = self.oldenemy;
-			HuntTarget (self.enemy.origin);
-		}
-		else
-		{
-			if (self.movetarget)
-				self.th_walk ();
-			else
-				self.th_stand ();
-			return;
-		}
-	}
+	if (self.enemy.health <= 0) ai_enemy_dead();
+
+	// check retreat 	
+	// if(ai_check_retreat() && self.retreat_steps == 0) {
+	// 	ai_retreat();
+	// }
+	// else { 
+	// 	self.retreat_steps = self.retreat_steps - 1;
+	// }
+
 
 	// wake up other monsters
 	self.show_hostile = time + 1;
@@ -656,40 +706,35 @@ void(float dist) ai_run =
 	// check knowledge of enemy
 	enemy_vis = visible(self.enemy);
 
-	if (enemy_vis)
-		self.search_time = time + 5;
+	if (enemy_vis) self.search_time = time + 5;
 
 	// look for other coop players
-	if (coop && self.search_time < time)
-	{
-		if (FindTarget ())
-			return;
+	if (coop && self.search_time < time) {
+		if (FindTarget ()) return;
 	}
 
 	enemy_infront = infront(self.enemy);
 	enemy_range = range(self.enemy);
 	enemy_yaw = vectoyaw(self.enemy.origin - self.origin);
 
-	if (self.attack_state == AS_MISSILE)
-	{
+	if (self.attack_state == AS_MISSILE) {
 		ai_run_missile ();
 		return;
 	}
-	if (self.attack_state == AS_MELEE)
-	{
+	if (self.attack_state == AS_MELEE) {
 		ai_run_melee ();
 		return;
 	}
 
-	if (CheckAnyAttack ())
-		return;					// beginning an attack
+	// beginning an attack
+	if (CheckAnyAttack ()) return; 		
 
-	if (self.attack_state == AS_SLIDING)
-	{
+	if (self.attack_state == AS_SLIDING) {
 		ai_run_slide ();
 		return;
 	}
 
-	// head straight in
-	movetogoal (dist);		// done in C code...
+
+	movetogoal (dist);
 };
+

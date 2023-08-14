@@ -160,6 +160,7 @@ void() ai_face =
 	ChangeYaw ();
 };
 
+
 /*
 =============
 ai_charge
@@ -244,67 +245,6 @@ void() ai_melee_side =
 
 //=============================================================================
 
-/*
-===========
-SoldierCheckAttack
-
-The player is in view, so decide to move or launch an attack
-Returns FALSE if movement should continue
-============
-*/
-float() SoldierCheckAttack =
-{
-	local vector spot1, spot2;
-	local entity targ;
-	local float chance;
-
-	targ = self.enemy;
-
-	// see if any entities are in the way of the shot
-	spot1 = self.origin + self.view_ofs;
-	spot2 = targ.origin + targ.view_ofs;
-
-	traceline (spot1, spot2, FALSE, self);
-
-	if (trace_inopen && trace_inwater)
-		return FALSE;			// sight line crossed contents
-
-	if (trace_ent != targ)
-		return FALSE;	// don't have a clear shot
-
-
-	// missile attack
-	if (time < self.attack_finished)
-		return FALSE;
-
-	if (enemy_range == RANGE_FAR)
-		return FALSE;
-
-	if (enemy_range == RANGE_MELEE)
-		chance = 1;
-	else if (enemy_range == RANGE_NEAR)
-		chance = 0.8;
-	else if (enemy_range == RANGE_MID)
-		chance = 0.5;
-	else if (enemy_range == RANGE_FAR)
-		chance = 0.1;
-	else
-		chance = 0;
-
-	if (random() < chance)
-	{
-		self.th_missile ();
-		SUB_AttackFinished (1 + random());
-
-		if (random() < 0.3)
-			self.lefty = !self.lefty;
-
-		return TRUE;
-	}
-
-	return FALSE;
-};
-//=============================================================================
 
 /*
 ===========
@@ -365,67 +305,18 @@ float() ShamCheckAttack =
 //============================================================================
 
 /*
-===========
-OgreCheckAttack
-
-The player is in view, so decide to move or launch an attack
-Returns FALSE if movement should continue
-============
+    Precise and motion-aware attack
 */
-float() OgreCheckAttack =
-{
-	local vector spot1, spot2;
-	local entity targ;
-	local float chance;
+void(entity missile) CalculateGrenadeTrajectory = {
+	// more precise shooting
+	vector enemyVec = self.enemy.origin - self.origin;
+	vector enemyVecNorm = normalize(enemyVec);
+	float distance = vlen(enemyVec);
 
-	if (enemy_range == RANGE_MELEE)
-	{
-		if (CanDamage (self.enemy, self))
-		{
-			self.attack_state = AS_MELEE;
-			return TRUE;
-		}
-	}
+	missile.velocity = enemyVecNorm;
+	missile.velocity = missile.velocity * 600;
+	missile.velocity_z = 600 * enemyVecNorm_z + distance * 0.70;
 
-	if (time < self.attack_finished)
-		return FALSE;
-
-	if (!enemy_vis)
-		return FALSE;
-
-	targ = self.enemy;
-
-	// see if any entities are in the way of the shot
-	spot1 = self.origin + self.view_ofs;
-	spot2 = targ.origin + targ.view_ofs;
-
-	traceline (spot1, spot2, FALSE, self);
-
-	if (trace_inopen && trace_inwater)
-		// sight line crossed contents
-		return FALSE;
-
-	if (trace_ent != targ)
-	{
-		// don't have a clear shot
-		return FALSE;
-	}
-
-	// missile attack
-	if (time < self.attack_finished)
-		return FALSE;
-
-	if (enemy_range == RANGE_FAR)
-		return FALSE;
-
-	else if (enemy_range == RANGE_NEAR)
-		chance = 0.10;
-	else if (enemy_range == RANGE_MID)
-		chance = 0.05;
-	else
-		chance = 0;
-
-	self.attack_state = AS_MISSILE;
-	SUB_AttackFinished (1 + 2*random());
-	return TRUE;
-};
+	// consider player movement
+	missile.velocity = missile.velocity + self.enemy.velocity;
+}

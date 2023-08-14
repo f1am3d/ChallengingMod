@@ -216,23 +216,20 @@ BULLETS
 TraceAttack
 ================
 */
-void(float damage, vector dir) TraceAttack =
-{
+void(float damage, vector dir) TraceAttack = {
 	local vector vel, org;
 
-	vel = normalize(dir + v_up*crandom() + v_right*crandom());
-	vel = vel + 2*trace_plane_normal;
+	vel = normalize(dir + v_up * crandom() + v_right * crandom());
+	vel = vel + 2 * trace_plane_normal;
 	vel = vel * 200;
 
-	org = trace_endpos - dir*4;
+	org = trace_endpos - dir * 4;
 
-	if (trace_ent.takedamage)
-	{
-		SpawnBlood (org, vel*0.2, damage);
+	if (trace_ent.takedamage){
+		SpawnBlood (org, vel * 0.2, damage);
 		AddMultiDamage (trace_ent, damage);
 	}
-	else
-	{
+	else {
 		WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
 		WriteByte (MSG_BROADCAST, TE_GUNSHOT);
 		WriteCoord (MSG_BROADCAST, org_x);
@@ -261,10 +258,8 @@ void(float shotcount, vector dir, vector spread) FireBullets =
 
 	ClearMultiDamage ();
 	
-	while (shotcount > 0)
-	{
+	while (shotcount > 0) {
 		direction = dir + crandom() * spread_x * v_right + crandom() * spread_y * v_up;
-
 		traceline (src, src + direction * 2048, FALSE, self);
 
 		if (trace_fraction != 1.0) {

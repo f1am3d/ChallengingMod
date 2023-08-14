@@ -61,7 +61,6 @@ SOLDIER CODE
 ==============================================================================
 */
 
-void() army_fire;
 
 void()	army_stand1	=[	$stand1,	army_stand2	] {ai_stand();};
 void()	army_stand2	=[	$stand2,	army_stand3	] {ai_stand();};
@@ -71,6 +70,7 @@ void()	army_stand5	=[	$stand5,	army_stand6	] {ai_stand();};
 void()	army_stand6	=[	$stand6,	army_stand7	] {ai_stand();};
 void()	army_stand7	=[	$stand7,	army_stand8	] {ai_stand();};
 void()	army_stand8	=[	$stand8,	army_stand1	] {ai_stand();};
+
 
 void()	army_walk1	=[	$prowl_1,	army_walk2	]
 {
@@ -102,31 +102,34 @@ void()	army_walk22	=[	$prowl_22,	army_walk23	] {ai_walk(1);};
 void()	army_walk23	=[	$prowl_23,	army_walk24	] {ai_walk(1);};
 void()	army_walk24	=[	$prowl_24,	army_walk1	] {ai_walk(1);};
 
-float runspeed = 25.0;
+void() on_army_run = {
+	ai_run(soldier_runspeed);
+
+	if(SoldierCheckAttack()) {
+		SoldierAttack();
+	}
+};
 
 void()	army_run1	=[	$run1,		army_run2	]
 {
 	if (random() < 0.2)
 		sound (self, CHAN_VOICE, "soldier/idle.wav", 1, ATTN_IDLE);
 
-	ai_run(runspeed);
+	on_army_run();
 };
-void()	army_run2	=[	$run2,		army_run3	] {ai_run(runspeed);};
-void()	army_run3	=[	$run3,		army_run4	] {ai_run(runspeed);};
-void()	army_run4	=[	$run4,		army_run5	] {ai_run(runspeed);};
-void()	army_run5	=[	$run5,		army_run6	] {ai_run(runspeed);};
-void()	army_run6	=[	$run6,		army_run7	] {ai_run(runspeed);};
-void()	army_run7	=[	$run7,		army_run8	] {ai_run(runspeed);};
-void()	army_run8	=[	$run8,		army_run1	] {ai_run(runspeed);};
+void()	army_run2	=[	$run2,		army_run3	] {on_army_run();};
+void()	army_run3	=[	$run3,		army_run4	] {on_army_run();};
+void()	army_run4	=[	$run4,		army_run5	] {on_army_run();};
+void()	army_run5	=[	$run5,		army_run6	] { on_army_run(); };
+void()	army_run6	=[	$run6,		army_run7	] {on_army_run();};
+void()	army_run7	=[	$run7,		army_run8	] {on_army_run();};
+void()	army_run8	=[	$run8,		army_run1	] {on_army_run();};
 
 void()	army_atk1	=[	$shoot1,	army_atk2	] {ai_face();};
 void()	army_atk2	=[	$shoot2,	army_atk3	] {ai_face();};
 void()	army_atk3	=[	$shoot3,	army_atk4	] {ai_face();};
 void()	army_atk4	=[	$shoot4,	army_atk5	] {ai_face();};
-void()	army_atk5	=[	$shoot5,	army_atk6	] {
-	ai_face();
-	army_fire();
-};
+void()	army_atk5	=[	$shoot5,	army_atk6	] {ai_face();};
 void()	army_atk6	=[	$shoot6,	army_atk7	] {ai_face();};
 void()	army_atk7	=[	$shoot7,	army_atk8	] {ai_face();};
 void()	army_atk8	=[	$shoot8,	army_atk9	] {ai_face();};
@@ -169,22 +172,21 @@ void()	army_painc11=[	$painc11,	army_painc12] {ai_painforward(6);};
 void()	army_painc12=[	$painc12,	army_painc13] {ai_painforward(8);};
 void()	army_painc13=[	$painc13,	army_run1] {};
 
-void(entity attacker, float damage)	army_pain =
-{
-	local float r;
+void(entity attacker, float damage)	army_pain = {
+	local float rnd;
 
 	if (self.pain_finished > time)
 		return;
 
-	r = random();
+	rnd = random();
 
-	if (r < 0.2)
+	if (rnd < 0.2)
 	{
 		self.pain_finished = time + 0.6;
 		army_pain1 ();
 		sound (self, CHAN_VOICE, "soldier/pain1.wav", 1, ATTN_NORM);
 	}
-	else if (r < 0.6)
+	else if (rnd < 0.6)
 	{
 		self.pain_finished = time + 1.1;
 		army_painb1 ();
@@ -199,32 +201,13 @@ void(entity attacker, float damage)	army_pain =
 };
 
 
-void() army_fire =
-{
-	local vector dir;
-	local entity en;
-
-	ai_face();	
-
-	// fire somewhat behind the player, so a dodging player is harder to hit
-	en = self.enemy;
-
-	dir = en.origin - en.velocity * 0.1;
-	dir = normalize (dir - self.origin);
-
-	self.effects = self.effects | EF_MUZZLEFLASH;
-	sound (self, CHAN_WEAPON, "soldier/sattck1.wav", 1, ATTN_NORM);
-
-	FireBullets (16, dir, '0.3 0.3 0');
-};
-
 
 void()	army_die1	=[	$death1,	army_die2	] {};
 void()	army_die2	=[	$death2,	army_die3	] {};
-void()	army_die3	=[	$death3,	army_die4	]
-{
+void()	army_die3	=[	$death3,	army_die4	] {
 	self.solid = SOLID_NOT;
-	self.ammo_shells = 5;
+	self.ammo_shells = soldier_drop_ammo;
+
 	DropBackpack();
 };
 void()	army_die4	=[	$death4,	army_die5	] {};
@@ -237,10 +220,10 @@ void()	army_die10	=[	$death10,	army_die10	] {};
 
 void()	army_cdie1	=[	$deathc1,	army_cdie2	] {};
 void()	army_cdie2	=[	$deathc2,	army_cdie3	] {ai_back(5);};
-void()	army_cdie3	=[	$deathc3,	army_cdie4	]
-{
+void()	army_cdie3	=[	$deathc3,	army_cdie4	] {
 	self.solid = SOLID_NOT;
-	self.ammo_shells = 5;
+	self.ammo_shells = soldier_drop_ammo;
+
 	DropBackpack();
 	ai_back(4);
 };
@@ -254,38 +237,35 @@ void()	army_cdie10	=[	$deathc10,	army_cdie11	] {};
 void()	army_cdie11	=[	$deathc11,	army_cdie11	] {};
 
 
-void() army_die =
-{
+void() army_die = {
 	// check for gib
-	if (self.health < -35)
-	{
+	if (self.health < -35) {
 		sound (self, CHAN_VOICE, "player/udeath.wav", 1, ATTN_NORM);
+
 		ThrowHead ("progs/h_guard.mdl", self.health);
 		ThrowGib ("progs/gib1.mdl", self.health);
 		ThrowGib ("progs/gib2.mdl", self.health);
 		ThrowGib ("progs/gib3.mdl", self.health);
+
 		return;
 	}
 
 	// regular death
 	sound (self, CHAN_VOICE, "soldier/death1.wav", 1, ATTN_NORM);
 	
-	if (random() < 0.5)
-		army_die1 ();
-	else
-		army_cdie1 ();
+	if (random() < 0.5) army_die1();
+	else army_cdie1();
 };
 
 
 /*QUAKED monster_army (1 0 0) (-16 -16 -24) (16 16 40) Ambush
 */
-void() monster_army =
-{
-	if (deathmatch)
-	{
+void() monster_army = {	
+	if (deathmatch) {
 		remove(self);
 		return;
 	}
+
 	precache_model ("progs/soldier.mdl");
 	precache_model ("progs/h_guard.mdl");
 	precache_model ("progs/gib1.mdl");
@@ -310,6 +290,8 @@ void() monster_army =
 	setmodel (self, "progs/soldier.mdl");
 
 	setsize (self, '-16 -16 -24', '16 16 40');
+	setsize (self, '-16 -16 -24', '16 16 40');
+
 	self.health = 80;
 
 	self.th_stand = army_stand1;
@@ -318,6 +300,7 @@ void() monster_army =
 	self.th_missile = army_atk1;
 	self.th_pain = army_pain;
 	self.th_die = army_die;
+	self.retreat_steps = 0;
 
 	walkmonster_start ();
 };
