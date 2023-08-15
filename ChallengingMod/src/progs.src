@@ -1,6 +1,9 @@
 ../progs.dat
 
+
 defs.qc
+
+
 subs.qc
 fight.qc
 ai.qc
@@ -16,6 +19,7 @@ buttons.qc
 triggers.qc
 plats.qc
 misc.qc
+
 
 ogre/ogre_init.qc
 ogre/ogre_fight.qc

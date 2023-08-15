@@ -17,6 +17,13 @@
     See file, 'COPYING', for details.
 */
 
+/*
+	MOD
+*/
+.float mod_rougelike_mode;
+.float mod_deaths_count;
+
+
 void() InitBodyQue;
 
 
@@ -346,6 +353,12 @@ void() worldspawn =
 
 	// 63 testing
 	lightstyle(63, "a");
+
+	// init mod
+	self.mod_rougelike_mode = 1;
+	self.mod_deaths_count = 0;
+
+	DrawString (1, 2, ftos(self.mod_rougelike_mode)); 
 };
 
 void() StartFrame =

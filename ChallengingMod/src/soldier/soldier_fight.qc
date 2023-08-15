@@ -1,19 +1,22 @@
-void() army_fire = {
-	local vector dir;
-	local entity enemt;
-
-	ai_face();	
-
-	// fire somewhat behind the player, so a dodging player is harder to hit
-	enemt = self.enemy;
-
-	dir = enemt.origin - enemt.velocity * 0.1;
-	dir = normalize (dir - self.origin);
+void(vector dir) army_shoot = {
 
 	self.effects = self.effects | EF_MUZZLEFLASH;
 	sound (self, CHAN_WEAPON, "soldier/sattck1.wav", 1, ATTN_NORM);
 
-	FireBullets (16, dir, '0.2 0.2 0');
+	FireBullets (6, dir, '0.04 0.04 0');
+};
+
+
+void() army_fire = {
+	local vector dir;
+
+	ai_face();	
+
+	// fire somewhat behind the player, so a dodging player is harder to hit
+	dir = self.enemy.origin - self.enemy.velocity * 0.1;
+	dir = normalize (dir - self.origin);
+
+	army_shoot(dir);
 };
 
 

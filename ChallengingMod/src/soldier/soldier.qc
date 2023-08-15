@@ -120,7 +120,7 @@ void()	army_run1	=[	$run1,		army_run2	]
 void()	army_run2	=[	$run2,		army_run3	] {on_army_run();};
 void()	army_run3	=[	$run3,		army_run4	] {on_army_run();};
 void()	army_run4	=[	$run4,		army_run5	] {on_army_run();};
-void()	army_run5	=[	$run5,		army_run6	] { on_army_run(); };
+void()	army_run5	=[	$run5,		army_run6	] {on_army_run();};
 void()	army_run6	=[	$run6,		army_run7	] {on_army_run();};
 void()	army_run7	=[	$run7,		army_run8	] {on_army_run();};
 void()	army_run8	=[	$run8,		army_run1	] {on_army_run();};
@@ -201,15 +201,18 @@ void(entity attacker, float damage)	army_pain = {
 };
 
 
-
-void()	army_die1	=[	$death1,	army_die2	] {};
-void()	army_die2	=[	$death2,	army_die3	] {};
-void()	army_die3	=[	$death3,	army_die4	] {
+void() on_army_die = {
 	self.solid = SOLID_NOT;
 	self.ammo_shells = soldier_drop_ammo;
 
 	DropBackpack();
 };
+
+void()	army_die1	=[	$death1,	army_die2	] {
+	sound (self, CHAN_VOICE, "soldier/death1.wav", 1, ATTN_NORM);
+};
+void()	army_die2	=[	$death2,	army_die3	] {};
+void()	army_die3	=[	$death3,	army_die4	] { on_army_die(); };
 void()	army_die4	=[	$death4,	army_die5	] {};
 void()	army_die5	=[	$death5,	army_die6	] {};
 void()	army_die6	=[	$death6,	army_die7	] {};
@@ -218,13 +221,12 @@ void()	army_die8	=[	$death8,	army_die9	] {};
 void()	army_die9	=[	$death9,	army_die10	] {};
 void()	army_die10	=[	$death10,	army_die10	] {};
 
-void()	army_cdie1	=[	$deathc1,	army_cdie2	] {};
+void()	army_cdie1	=[	$deathc1,	army_cdie2	] {
+	sound (self, CHAN_VOICE, "soldier/death1.wav", 1, ATTN_NORM);
+};
 void()	army_cdie2	=[	$deathc2,	army_cdie3	] {ai_back(5);};
 void()	army_cdie3	=[	$deathc3,	army_cdie4	] {
-	self.solid = SOLID_NOT;
-	self.ammo_shells = soldier_drop_ammo;
-
-	DropBackpack();
+	on_army_die();
 	ai_back(4);
 };
 void()	army_cdie4	=[	$deathc4,	army_cdie5	] {ai_back(13);};
@@ -235,6 +237,41 @@ void()	army_cdie8	=[	$deathc8,	army_cdie9	] {};
 void()	army_cdie9	=[	$deathc9,	army_cdie10	] {};
 void()	army_cdie10	=[	$deathc10,	army_cdie11	] {};
 void()	army_cdie11	=[	$deathc11,	army_cdie11	] {};
+
+void () army_do_rage = {
+	local float random_sign = 1;
+
+	if(random() > 0.5) random_sign = 1;
+	else random_sign = -1;
+
+	self.ideal_yaw += random() * 45 * random_sign; 
+
+	ChangeYaw();
+	makevectors(self.angles);
+	army_shoot(v_forward);
+};
+
+void() army_stand_rage_1 = [ $shoot1, army_stand_rage_2 ] {
+	sound (self, CHAN_VOICE, "soldier/sight1.wav", 1, ATTN_NORM);
+};
+void() army_stand_rage_2 = [ $shoot5, army_stand_rage_3 ] {army_do_rage();};
+void() army_stand_rage_3 = [ $shoot6, army_stand_rage_4 ] {};
+void() army_stand_rage_4 = [ $shoot1, army_stand_rage_5 ] {};
+void() army_stand_rage_5 = [ $shoot5, army_stand_rage_6 ] {army_do_rage();};
+void() army_stand_rage_6 = [ $shoot6, army_stand_rage_7 ] {};
+void() army_stand_rage_7 = [ $shoot1, army_stand_rage_8 ] {
+	sound (self, CHAN_VOICE, "soldier/sight1.wav", 1, ATTN_NORM);
+};
+void() army_stand_rage_8  = [ $shoot5, army_stand_rage_9 ] {army_do_rage();};
+void() army_stand_rage_9 = [ $shoot6, army_stand_rage_10 ] {};
+void() army_stand_rage_10 = [ $shoot1, army_stand_rage_11 ] {};
+void() army_stand_rage_11 = [ $shoot5, army_stand_rage_12 ] {army_do_rage();};
+void() army_stand_rage_12 = [ $shoot6, army_stand_rage_13 ] {};
+void() army_stand_rage_13 = [ $shoot1, army_stand_rage_14 ] {
+	sound (self, CHAN_VOICE, "soldier/sight1.wav", 1, ATTN_NORM);
+};
+void() army_stand_rage_14 = [ $shoot5, army_stand_rage_15 ] {army_do_rage();};
+void() army_stand_rage_15  = [ $shoot6, army_die1 ] {};
 
 
 void() army_die = {
@@ -250,10 +287,14 @@ void() army_die = {
 		return;
 	}
 
-	// regular death
-	sound (self, CHAN_VOICE, "soldier/death1.wav", 1, ATTN_NORM);
 	
-	if (random() < 0.5) army_die1();
+	// rage death
+	if(random() <= soldier_rage_chance) {
+		self.yaw_speed = 1000;
+		army_stand_rage_1();
+	}
+	// regular deaths
+	else if (random() < 0.5) army_die1();
 	else army_cdie1();
 };
 
