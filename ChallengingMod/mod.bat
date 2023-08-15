@@ -1,1 +1,1 @@
-quakespasm.exe -game mod
+fteqw64.exe -game mod
