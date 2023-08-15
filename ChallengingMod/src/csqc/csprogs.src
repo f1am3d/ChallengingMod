@@ -1,0 +1,45 @@
+../csprogs.dat
+
+deps_csqc/csapi.qc
+deps/defs.qc
+deps_csqc/csdefs.qc
+deps/quakeED.qc
+deps/subs.qc
+deps/fight.qc
+deps/ai.qc
+deps/combat.qc
+deps/items.qc
+deps/weapons.qc
+deps/world.qc
+deps/client.qc
+deps/player.qc
+deps/monsters.qc
+deps/doors.qc
+deps/buttons.qc
+deps/triggers.qc
+deps/plats.qc
+deps/misc.qc
+
+deps/ogre.qc
+deps/demon.qc
+deps/shambler.qc
+deps/knight.qc
+deps/soldier.qc
+deps/wizard.qc
+deps/dog.qc
+deps/zombie.qc
+deps/boss.qc
+
+deps/tarbaby.qc		// registered
+deps/hknight.qc		// registered
+deps/fish.qc			// registered
+deps/shalrath.qc		// registered
+deps/enforcer.qc		// registered
+deps/oldone.qc		// registered
+
+deps_csqc/hud.qc
+deps_csqc/menu.qc
+deps_csqc/pmove.qc
+deps_csqc/spawn.qc
+deps_csqc/purecs.qc
+deps_csqc/screen.qc
